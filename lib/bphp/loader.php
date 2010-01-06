@@ -1,7 +1,7 @@
 <?php
 
 	// Get directory containing ourself...
-	$path = explode ( '/', __DIR__ );
+	$path = explode ( '/', dirname ( __FILE__ ) );	// FIXME: PHP 5.3.0 will introduce __DIR__
 	print_r ( $path );
 	array_pop ( $path );
 	print_r ( $path );
