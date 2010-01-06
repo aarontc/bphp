@@ -2,14 +2,12 @@
 
 	// Get directory containing ourself...
 	$path = explode ( '/', dirname ( __FILE__ ) );	// FIXME: PHP 5.3.0 will introduce __DIR__
-	print_r ( $path );
 	array_pop ( $path );
-	print_r ( $path );
+	array_pop ( $path );
 	$path = implode ( '/', $path );
-	print_r ( $path );
+	// So that we can add the application base URL to the include path
 	// Append the normal PHP include path
 	$path .= ':' . ini_get ( 'include_path' );
-	print_r ( $path );
 	// Update the system include path
 	ini_set ( 'include_path', $path );
 
