@@ -1,6 +1,7 @@
 <?php
 
+	define ( 'DEBUG', TRUE );
 	define ( 'DATABASE_CONNECTION_STRING', "" );
-	define ( 'USER_PASSWORD_SALT', "" );
-	
+	define ( 'SITE_PASSWORD_SALT', "" );
+
 ?>
