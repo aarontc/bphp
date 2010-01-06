@@ -1,17 +1,15 @@
 <?php
 
-	define ( 'DEBUG', TRUE );
-
 	// Get directory containing ourself...
-	$pathx = substr ( __FILE__, 0, strrpos ( __FILE__, '/' ) );
-	$pathy = explode ( '/', $pathx );
-	array_pop ( $pathy );
-	array_pop ( $pathy );
-	$pathy = implode ( '/', $pathy );
+	$path = explode ( '/', __DIR__ );
+	array_pop ( $path );
+	$path = implode ( '/', $pathy );
 	// Append the normal PHP include path
-	$pathx .= ':' . $pathy . ':' . ini_get ( 'include_path' );
+	$path .= ':' . ini_get ( 'include_path' );
 	// Update the system include path
-	ini_set ( 'include_path', $pathx );
+	ini_set ( 'include_path', $path );
+
+	require_once ( 'cfg/bphp.config.php' );
 
 	if ( DEBUG )
 		ini_set ( 'error_reporting', E_ALL );
@@ -27,7 +25,6 @@
 	ob_start ();
 	session_start ();
 
-	require ( 'cfg/osoasis.config.php' );
 	require ( 'lib/bphp/database.php' );
 	require ( 'lib/bphp/userfunctions.php' );
 	require ( 'lib/bphp/flash.php' );
