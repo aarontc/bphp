@@ -3,7 +3,7 @@
 	// Get directory containing ourself...
 	$path = explode ( '/', __DIR__ );
 	array_pop ( $path );
-	$path = implode ( '/', $pathy );
+	$path = implode ( '/', $path );
 	// Append the normal PHP include path
 	$path .= ':' . ini_get ( 'include_path' );
 	// Update the system include path
