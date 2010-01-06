@@ -10,8 +10,8 @@
 
 		Actually, use the A function. 'href=' . A ( 'blah' ) . ''
 	*/
-	
-	define ( 'ROUTE_BASE_PATH', '/var/www/osoasis/content' );
+
+	define ( ROUTE_BASE_PATH, APP_PATH . '/content' );
 
 	if ( ! isset ( $_SERVER['SCRIPT_NAME'] ) )
 		die ( "Error with server architecture: environment variable SCRIPT_NAME not set!" );
@@ -30,7 +30,7 @@
     	die ( "Error collecting path!" );
 
 	if ( $REQUESTPATH == "/index.php" )
-    	die ( "Error: Loader called directly. This probably means mod_rewrite is broken or .htaccess file is not being honored." );
+    	die ( "Error: Loader called directly. This probably means mod_rewrite is broken or .htaccess file is not being honored. See http://code.google.com/p/bphp/wiki/ErrorLoaderCalledDirectly" );
 
 	$REQUESTPATH = urldecode ( $REQUESTPATH );
 
@@ -73,13 +73,13 @@
 		unset ( $try );
 		if ( ! $found ) {
 			//echo "Whoops! Couldn't find $flatpath!";
-			$source = ( ROUTE_BASE_PATH . '/404.php' );
+			$source = ( ROUTE_BASE_PATH . '/errors/404.php' );
 			header ( "HTTP/1.0 404 Not Found" );
 		}
 	}
 
 	if ( ! ( isset ( $path[0] ) && $path[0] == "user" && isset ( $path[1] ) && $path[1] == "login" ) )
 		$_SESSION['lastrequest'] = $_SERVER['REQUEST_URI'];
-	
+
 	include ( $source );
 ?>
