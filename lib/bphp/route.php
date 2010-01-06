@@ -33,6 +33,7 @@
     	die ( "Error: Loader called directly. This probably means mod_rewrite is broken or .htaccess file is not being honored. See http://code.google.com/p/bphp/wiki/ErrorLoaderCalledDirectly" );
 
 	$REQUESTPATH = urldecode ( $REQUESTPATH );
+	$path = array();
 
   	$getpath = explode ( '/', $REQUESTPATH );
   	foreach ( $getpath as $checkpath )
