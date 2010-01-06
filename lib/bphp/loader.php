@@ -23,7 +23,7 @@
 
 	ob_start ();
 	session_start ();
-
+	require_once ( 'lib/bphp/customfunctions.php' );
 	require_once ( 'lib/bphp/database.php' );
 	require_once ( 'lib/bphp/userfunctions.php' );
 	require_once ( 'lib/bphp/flash.php' );
