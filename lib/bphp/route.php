@@ -11,7 +11,7 @@
 		Actually, use the A function. 'href=' . A ( 'blah' ) . ''
 	*/
 
-	define ( ROUTE_BASE_PATH, APP_PATH . '/content' );
+	define ( 'ROUTE_BASE_PATH', APP_PATH . '/content' );
 
 	if ( ! isset ( $_SERVER['SCRIPT_NAME'] ) )
 		die ( "Error with server architecture: environment variable SCRIPT_NAME not set!" );
