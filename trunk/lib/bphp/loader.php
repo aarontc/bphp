@@ -18,19 +18,15 @@
 	else
 		ini_set ( 'error_reporting', E_ERROR );
 
-	require_once ( 'lib/bphp/customfunctions.php' );
-	//require_once ( 'adminfunctions.php' );
-
 	// PHP should be bashed over the head again and again and again for ever coming up with this idea...
 	undo_magic_quotes ();
 
 	ob_start ();
 	session_start ();
 
-	require ( 'lib/bphp/database.php' );
-	require ( 'lib/bphp/userfunctions.php' );
-	require ( 'lib/bphp/flash.php' );
-
-	require_once ( 'lib/php/route.php' );
+	require_once ( 'lib/bphp/database.php' );
+	require_once ( 'lib/bphp/userfunctions.php' );
+	require_once ( 'lib/bphp/flash.php' );
+	require_once ( 'lib/bphp/route.php' );
 
 ?>
