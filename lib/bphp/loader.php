@@ -6,6 +6,8 @@
 	array_pop ( $path );
 	$path = implode ( '/', $path );
 	// So that we can add the application base URL to the include path
+	define ( 'APP_PATH', $path );
+
 	// Append the normal PHP include path
 	$path .= ':' . ini_get ( 'include_path' );
 	// Update the system include path
