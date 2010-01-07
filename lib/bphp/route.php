@@ -42,19 +42,10 @@
   	foreach ( $getpath as $checkpath )
     	if ( $checkpath != "" ) $path[] = $checkpath;
   	unset ( $getpath );
-  	if ( isset ( $path ) ) {
-    	if ( substr ( $REQUESTPATH, -1 ) == "/" )
-      		$numlevels = 1;
-    	else
-			$numlevels = 0;
-    	define ( 'TOP_LEVEL', str_repeat ( '../', count ( $path ) - 1 + $numlevels ) );
-    	unset ( $numlevels );
-    	$flatpath = implode ( '/', $path );
-  	} else {
-    	define ( 'TOP_LEVEL', "" );
+  	if ( count ( $path ) == 0 ) {
     	$path = array ( 'home' );
-    	$flatpath = "home";
   	}
+	$flatpath = implode ( '/', $path );
 
 	// Check if "real" path exists
 	if ( file_exists ( ROUTE_BASE_PATH . '/' . $flatpath . '.php' ) )
