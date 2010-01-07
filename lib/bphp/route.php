@@ -20,7 +20,6 @@
 
 	// Requested path is everything after the common part of SCRIPT_NAME and REQUEST_URI in REQUEST_URI...
 	// To save processing time, we assume the file in SCRIPT_NAME is at the path root
-	print_r ( $_SERVER );
 	$REQUESTPATH = substr ( $_SERVER['REQUEST_URI'] , strrpos ( $_SERVER['SCRIPT_NAME'], '/' ) );
 
 	$x = strpos ( $REQUESTPATH, '?' );
@@ -35,7 +34,6 @@
 
 	$REQUESTPATH = urldecode ( $REQUESTPATH );
 
-	print_r ( $REQUESTPATH );
 	$path = array();
 
   	$getpath = explode ( '/', $REQUESTPATH );
