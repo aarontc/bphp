@@ -30,6 +30,11 @@
 	require_once ( 'lib/bphp/database.php' );
 	require_once ( 'lib/bphp/userfunctions.php' );
 	require_once ( 'lib/bphp/flash.php' );
+
+	// Load application specific file
+	include_once ( 'lib/loader.php' );
+
+	// Dispatch request via router
 	require_once ( 'lib/bphp/route.php' );
 
 ?>
