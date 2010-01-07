@@ -60,6 +60,7 @@
 		// Work up to it!
 		$try = $path;
 		$found = FALSE;
+		$test = array ();
 		for ( $x = count ( $try ); $x > 0; $x-- ) {
 			$test[] = implode ( '/', $try );
 			array_pop ( $try );
