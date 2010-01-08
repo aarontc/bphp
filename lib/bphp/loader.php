@@ -26,8 +26,8 @@
 	undo_magic_quotes ();
 
 	// Load application specific session
-	if ( file_exists ( 'lib/session.php' ) )
-		include_once ( 'lib/session.php' );
+	if ( file_exists ( APP_PATH . '/lib/session.php' ) )
+		include_once ( APP_PATH . '/lib/session.php' );
 
 	// Start session
 	ob_start ();
@@ -38,8 +38,8 @@
 	require_once ( 'lib/bphp/flash.php' );
 
 	// Load application specific file
-	if ( file_exists ( 'lib/loader.php' ) )
-		include_once ( 'lib/loader.php' );
+	if ( file_exists ( APP_PATH . '/lib/loader.php' ) )
+		include_once ( APP_PATH . '/lib/loader.php' );
 
 	// Dispatch request via router
 	require_once ( 'lib/bphp/route.php' );
