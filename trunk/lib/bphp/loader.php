@@ -25,14 +25,14 @@
 	// PHP should be bashed over the head again and again and again for ever coming up with this idea...
 	undo_magic_quotes ();
 
+	// Load application specific file
+	include_once ( 'lib/loader.php' );
+
 	ob_start ();
 	session_start ();
 	require_once ( 'lib/bphp/database.php' );
 	require_once ( 'lib/bphp/userfunctions.php' );
 	require_once ( 'lib/bphp/flash.php' );
-
-	// Load application specific file
-	include_once ( 'lib/loader.php' );
 
 	// Dispatch request via router
 	require_once ( 'lib/bphp/route.php' );
