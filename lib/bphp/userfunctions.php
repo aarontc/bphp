@@ -95,6 +95,7 @@
 	// used to determine whether
 	// Returns true if genesis is required (no real users exist)
 	function UserGenesisCheck () {
+		global $db;
 		$result = &$db -> Execute ( "SELECT COUNT(userid) AS num FROM users" );
 		$num = $result -> fields[0];
 		if ( $num == 0 )
