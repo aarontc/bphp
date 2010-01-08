@@ -26,12 +26,13 @@
 	undo_magic_quotes ();
 
 	// Load application specific session
-	if ( file_exists ( APP_PATH . '/lib/session.php' ) )
+	if ( file_exists ( APP_PATH . '/lib/session.php' ) ) {
 		include_once ( APP_PATH . '/lib/session.php' );
-
-	// Start session
-	ob_start ();
-	session_start ();
+	} else {
+		// Start session
+		ob_start ();
+		session_start ();
+	}
 
 	require_once ( 'lib/bphp/database.php' );
 	require_once ( 'lib/bphp/userfunctions.php' );
