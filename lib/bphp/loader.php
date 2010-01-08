@@ -38,7 +38,7 @@
 	require_once ( 'lib/bphp/flash.php' );
 
 	// Load application specific file
-	if ( file_exists ( 'lib/loader.php' )
+	if ( file_exists ( 'lib/loader.php' ) )
 		include_once ( 'lib/loader.php' );
 
 	// Dispatch request via router
