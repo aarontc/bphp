@@ -19,7 +19,7 @@
 	// Generally the salt only needs to be specified when the user is being created and their salt
 	// isn't in the database.
 	function UserHashPass ( $password, $salt ) {
-		return ( hash ( 'sha512', $salt . ':' . $password . ':' . USER_PASSWORD_SALT ) );
+		return ( hash ( 'sha512', $salt . ':' . $password . ':' . $CONFIG['Application']['PasswordSalt'] ) );
 	}
 
 	function UserRequireLogin() {
@@ -95,14 +95,12 @@
 	// used to determine whether
 	// Returns true if genesis is required (no real users exist)
 	function UserGenesisCheck () {
-		$query = "SELECT COUNT(userid) AS num FROM users WHERE username NOT IN ('adam','eve')";
-		$res = DatabaseQuery ( $query );
-		if ( $res ) {
-			$row = pg_fetch_assoc ( $res );
-			if ( $row['num'] == 0 )
-				return true;
-		}
-		return false;
+		$result = &$db -> Execute ( "SELECT COUNT(userid) AS num FROM users" );
+		$num = $result -> fields[0];
+		if ( $num == 0 )
+			return true;
+		else
+			return false;
 	}
 
 
