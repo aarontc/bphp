@@ -174,8 +174,9 @@
 				UserSendEmailActivationMessage ( $username, $email );
 			}
 			return TRUE;
-		else
+		} else {
 			return $db -> ErrorMsg();
+		}
 	}
 
 	function UserSendEmailActivationMessage ( $username, $email ) {
