@@ -2,20 +2,17 @@
 
 
 	function UserGetSalt ( $username ) {
-		$query = sprintf ( "SELECT salt FROM users WHERE LOWER(username)='%s'", pg_escape_string ( strtolower ( $username ) ) );
-		$res = DatabaseQuery ( $query );
-		if ( pg_num_rows ( $res ) == 1 ) {
-			$row = pg_fetch_assoc ( $res );
-			//echo "Salt = " . $row['salt'];
-			return $row['salt'];
-		} else {
-			die ( "Error: UserGetSalt returned not 1 rows [" . $query . "]" );
-		}
+		$result = $db -> Execute ( "SELECT salt FROM users WHERE LOWER(username)=?", strtolower ( $username ) );
+
+		if ( $result !== FALSE )
+			return $result->fields[0];
+		else
+			return FALSE;
 	}
 
 
 	// Returns a user's hashed password
-	// If salt is not passed, it will be looked up from the database.
+	// FIXME: If salt is not passed, it will be looked up from the database.
 	// Generally the salt only needs to be specified when the user is being created and their salt
 	// isn't in the database.
 	function UserHashPass ( $password, $salt ) {
@@ -73,7 +70,7 @@
 
 		if ( ( $fhandle = fopen ( '/dev/urandom', 'rb' ) ) != FALSE ) {
 
-    		for ( $i=0; $i< $length; $i++ ) {
+    		for ( $i=0; $i < $length; $i++ ) {
       			$val = ord ( fgetc ( $fhandle ) );
       			if ( $val <= 0x0f ) {
 					$rb = sprintf("0%X",$val);
@@ -83,8 +80,10 @@
 
 				$rs .= $rb;
 			}
-    	}
-		fclose ( $fhandle );
+			fclose ( $fhandle );
+    	} else {
+			die ( "Unable to open /dev/random for reading" );
+		}
 
 		return $rs;
 
@@ -117,11 +116,11 @@
 		$result = UserSession();
 		if ( $result === false )
 			return false;
-		return $result['userid'];
+		else
+			return $result['userid'];
 	}
 
-	function UserGetUserInfo( $username )
-	{
+	function UserGetUserInfo( $username ) {
 		$query = sprintf("SELECT * FROM users WHERE username='%s'", pg_escape_string( $username ));
 		$res = DatabaseQuery( $query );
 		if ($res)
@@ -134,35 +133,71 @@
 
 
 	function UserCreateUser ( $username, $password, $email, $firstname, $lastname ) {
-		// Check if logged in, if not genesis must be happening
-		$current_user = UserSession();
 
-		If ( $current_user === false ) {
-			$adamoreve = rand ( 0, 1 );
-			if ( $adamoreve == 0 )
-				$current_user = UserGetUserID ( 'adam' );
-			else
-				$current_user = UserGetUserID ( 'eve' );
-		}
-		else
-		{
-			$current_user = $current_user['userid'];
-		}
+		if ( strlen ( $username ) < 1 )
+			return ( "Username must be at least 1 character" );
+
+		if ( strlen ( $password ) < 1 )
+			return ( "Password cannot be blank" );
+
+		if ( !validEmail ( $email ) )
+			return ( "Email address format invalid or domain does not exist" );
+
+		if ( strlen ( $firstname ) < 1 )
+			return ( "First name cannot be blank" );
+
+		if ( strlen ( $lastname ) < 1 )
+			return ( "Last name cannot be blank" );
 
 		$salt = UserGenerateSalt();
-		$query = sprintf ( "INSERT INTO users (username, password, salt, email, firstname, lastname, created_by, updated_by) VALUES "
-					. "('%s', '%s', '%s', '%s', '%s', '%s', %d, %d)",
-					pg_escape_string ( $username ),
-					pg_escape_string ( UserHashPass ( $password, $salt ) ),
-					pg_escape_string ( $salt ),
-					pg_escape_string ( $email ),
-					pg_escape_string ( $firstname ),
-					pg_escape_string ( $lastname ),
-					$current_user,
-					$current_user
-				);
-		$res = DatabaseQuery ( $query );
-		return ( $res !== false );
+		//$db -> Execute ( "START TRANSACTION" );
+		$result = &$db -> Execute ( "INSERT INTO users (username, password, salt, first_name, last_name) VALUES (?,?,?,?,?)",
+				array ( $username,
+				UserHashPassword ( $password, $salt ),
+				$salt,
+				$firstname,
+				$lastname )
+			);
+
+		if ( $result !== false ) {
+			// insert email address
+			// first get user's ID
+			$result = &$db -> Execute ( "SELECT userid FROM users WHERE username=?", array($username) );
+			if ( $result === false )
+				die ( "Could not get newly inserted user's ID" );
+			$userid = $result->fields[0];
+			$emailkey = UserGenerateEmailKey();
+			$result = &$db -> Execute ( "INSERT INTO user_emails (userid, email, activation_key, activated) VALUES(?,?,?,?)",
+				array($userid, $email, $emailkey, FALSE) );
+			if ( $result !== FALSE ) {
+				// send email
+				UserSendEmailActivationMessage ( $username, $email );
+			}
+			return TRUE;
+		else
+			return $db -> ErrorMsg();
+	}
+
+	function UserSendEmailActivationMessage ( $username, $email ) {
+		$result = &$db -> Execute ( "SELECT activation_key FROM user_emails JOIN users ON users.userid = user_emails.userid WHERE users.username=? AND user_emails.email=? AND activated=0",
+			array ( $username, $email ) );
+		if ( $result !== FALSE ) {
+			$message = "Hello! You, or someone pretending to be you, has\n" .
+						"added the email address [" . $email . "]\n" .
+						"to the account [" . $username . "] at www.myvwan.com.\n".
+						"\n" .
+						"Before this address can be used, it must be activated by\n"
+						"following this link:\n" .
+						"\n" .
+						"http://www.myvwan.com/user/" . $username . "/activate/" . $result->fields[0] . "\n" .
+						"\n" .
+						"If this link is not clickable, please copy and paste it into your\n" .
+						"web browser.";
+
+			mail ( $email, "Email Activation for MyVWAN.com", $message, "From: www.myvwan.com Activation <noreply@myvwan.com>" );
+		} else {
+			die ( "Unable to send activation email" );
+		}
 	}
 
 	function UserGetUserID ( $username ) {
@@ -381,4 +416,80 @@
 			$query = sprintf( "DELETE FROM user_roles WHERE userid='%s'", pg_escape_string( $userid ) );
 		}
 	}
+
+
+
+	/**
+Validate an email address.
+Provide email address (raw input)
+Returns true if the email address has the email
+address format and the domain exists.
+
+From http://www.linuxjournal.com/article/9585
+*/
+function validEmail($email)
+{
+   $isValid = true;
+   $atIndex = strrpos($email, "@");
+   if (is_bool($atIndex) && !$atIndex)
+   {
+      $isValid = false;
+   }
+   else
+   {
+      $domain = substr($email, $atIndex+1);
+      $local = substr($email, 0, $atIndex);
+      $localLen = strlen($local);
+      $domainLen = strlen($domain);
+      if ($localLen < 1 || $localLen > 64)
+      {
+         // local part length exceeded
+         $isValid = false;
+      }
+      else if ($domainLen < 1 || $domainLen > 255)
+      {
+         // domain part length exceeded
+         $isValid = false;
+      }
+      else if ($local[0] == '.' || $local[$localLen-1] == '.')
+      {
+         // local part starts or ends with '.'
+         $isValid = false;
+      }
+      else if (preg_match('/\\.\\./', $local))
+      {
+         // local part has two consecutive dots
+         $isValid = false;
+      }
+      else if (!preg_match('/^[A-Za-z0-9\\-\\.]+$/', $domain))
+      {
+         // character not valid in domain part
+         $isValid = false;
+      }
+      else if (preg_match('/\\.\\./', $domain))
+      {
+         // domain part has two consecutive dots
+         $isValid = false;
+      }
+      else if
+(!preg_match('/^(\\\\.|[A-Za-z0-9!#%&`_=\\/$\'*+?^{}|~.-])+$/',
+                 str_replace("\\\\","",$local)))
+      {
+         // character not valid in local part unless
+         // local part is quoted
+         if (!preg_match('/^"(\\\\"|[^"])+"$/',
+             str_replace("\\\\","",$local)))
+         {
+            $isValid = false;
+         }
+      }
+      if ($isValid && !(checkdnsrr($domain,"MX") || checkdnsrr($domain,"A")))
+      {
+         // domain not found in DNS
+         $isValid = false;
+      }
+   }
+   return $isValid;
+}
+
 ?>
