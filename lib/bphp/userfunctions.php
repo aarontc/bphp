@@ -187,7 +187,7 @@
 						"added the email address [" . $email . "]\n" .
 						"to the account [" . $username . "] at www.myvwan.com.\n".
 						"\n" .
-						"Before this address can be used, it must be activated by\n"
+						"Before this address can be used, it must be activated by\n" .
 						"following this link:\n" .
 						"\n" .
 						"http://www.myvwan.com/user/" . $username . "/activate/" . $result->fields[0] . "\n" .
