@@ -1,0 +1,1 @@
+Need to fill this in. Short answer - use mod\_rewrite or .htaccess or configure the 404 URL.
